@@ -27,31 +27,7 @@ local util =
         nestedGet: _nestedGet,
     };
 
-local emptyScope = {
-    // apis: {
-    //     api: {
-    //         kind: { }, // => class
-    //     }
-    // },
-    // plugins: [
-    //     {
-    //         hooks: {
-    //             onApplyDefaults(state, parameters, api, kind, class, object): { }, // => object
-    //             onEnterScope(state, parameters): { }, // => state
-    //             onExportApi(state, api, kind, class): { }, // => class
-    //             onFilterScope(state, parameters): { }, // => bool
-    //         },
-    //         metadata: {
-    //             id: 'pluginId',
-    //             name: 'Plugin Name',
-    //             description: 'This is a plugin.'
-    //         },
-    //         state: {
-
-    //         }
-    //     }
-    // ]
-};
+local emptyScope = { };
 
 local loadPlugin(plugin) = {
     hooks: {
