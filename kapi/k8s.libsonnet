@@ -8,8 +8,6 @@ local versions = {
     '1.32': import './vendor/github.com/jsonnet-libs/k8s-libsonnet/1.32/main.libsonnet',
 };
 
-
-
 {
     getApi(version = '1.32'): util.apisFromK(versions[version])
 }
