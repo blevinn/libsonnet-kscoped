@@ -144,6 +144,66 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/jsonnet-libs/external-secrets-libsonnet.git",
+          "subdir": "0.4"
+        }
+      },
+      "version": "afa20bfbf068b3d97ea562e6d09ac2085367161f",
+      "sum": "vQRye20DRRQ5cI9M01Jpdeqr8SxA59krubm9Oj8wVhI="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/external-secrets-libsonnet.git",
+          "subdir": "0.5"
+        }
+      },
+      "version": "afa20bfbf068b3d97ea562e6d09ac2085367161f",
+      "sum": "y7ItcuGMp5B0aySJSw6YkTGXxsApQ/ZI5qgf3xHk1KE="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/external-secrets-libsonnet.git",
+          "subdir": "0.6"
+        }
+      },
+      "version": "afa20bfbf068b3d97ea562e6d09ac2085367161f",
+      "sum": "yqMYjS/Te3O2/7Nh7/5G3YQglfUkhbN/E+7oR0teLS0="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/external-secrets-libsonnet.git",
+          "subdir": "0.7"
+        }
+      },
+      "version": "afa20bfbf068b3d97ea562e6d09ac2085367161f",
+      "sum": "teCiwc/nZqo6gAVn0yHDqXorjPbKvpr8LVb4pXKBz6o="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/external-secrets-libsonnet.git",
+          "subdir": "0.8"
+        }
+      },
+      "version": "afa20bfbf068b3d97ea562e6d09ac2085367161f",
+      "sum": "6rHKSwMF6ksfGz6/aBiw/Qx+FWI44z0hCFf6tQPkveI="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/external-secrets-libsonnet.git",
+          "subdir": "0.9"
+        }
+      },
+      "version": "afa20bfbf068b3d97ea562e6d09ac2085367161f",
+      "sum": "pnR/x7LrYS8f7NQW8tTISb4pyQ9py8lhxK0TX0AihPg="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/jsonnet-libs/gateway-api-libsonnet.git",
           "subdir": "0.7"
         }
