@@ -144,6 +144,106 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/jsonnet-libs/gateway-api-libsonnet.git",
+          "subdir": "0.7"
+        }
+      },
+      "version": "d54902f3b6e444480b098d377f4df609ca9915c2",
+      "sum": "ARbDV61xgzCeYUynl9NRHRf40ZnAyx7mvmvVrQfsMqQ="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/gateway-api-libsonnet.git",
+          "subdir": "0.7-experimental"
+        }
+      },
+      "version": "d54902f3b6e444480b098d377f4df609ca9915c2",
+      "sum": "zq4M9fNt3UfCH/RQrKpK9icLmquyApHDX5taArY0+Sc="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/gateway-api-libsonnet.git",
+          "subdir": "0.8"
+        }
+      },
+      "version": "d54902f3b6e444480b098d377f4df609ca9915c2",
+      "sum": "ImM+iCw5kQFW3okobAfNk1tXHms+Z8wowmzTBP7MmTM="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/gateway-api-libsonnet.git",
+          "subdir": "0.8-experimental"
+        }
+      },
+      "version": "d54902f3b6e444480b098d377f4df609ca9915c2",
+      "sum": "s8gni7jj9y4eJdnP6IgHzRKvKDH6xJCUvGJdlOjvb00="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/gateway-api-libsonnet.git",
+          "subdir": "1.0"
+        }
+      },
+      "version": "d54902f3b6e444480b098d377f4df609ca9915c2",
+      "sum": "NtkB+kLSUlncJXWAUukWNWIFnAfOyX4+2TMfD4dq6xc="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/gateway-api-libsonnet.git",
+          "subdir": "1.0-experimental"
+        }
+      },
+      "version": "d54902f3b6e444480b098d377f4df609ca9915c2",
+      "sum": "QFRtThqrgPTGHoWfkEqGmjWbjRDNwN9k4DW7vtP+ELY="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/gateway-api-libsonnet.git",
+          "subdir": "1.1"
+        }
+      },
+      "version": "d54902f3b6e444480b098d377f4df609ca9915c2",
+      "sum": "ScZlZDR5Z9BS81qZFNhbCQLI8zMwFKisrxaiBG9KXp4="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/gateway-api-libsonnet.git",
+          "subdir": "1.1-experimental"
+        }
+      },
+      "version": "d54902f3b6e444480b098d377f4df609ca9915c2",
+      "sum": "/ghvdxNuNmUrBl++10bs5o3IfFJL8xxtnZSGeDn73DA="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/gateway-api-libsonnet.git",
+          "subdir": "1.2"
+        }
+      },
+      "version": "d54902f3b6e444480b098d377f4df609ca9915c2",
+      "sum": "oh7NG+vnwhqKsz6Pw89e6Fv5nWkxjY7EuRpK81dsgwo="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/gateway-api-libsonnet.git",
+          "subdir": "1.2-experimental"
+        }
+      },
+      "version": "d54902f3b6e444480b098d377f4df609ca9915c2",
+      "sum": "QsMc5oxO5kAw1Z+HayL7PwrX024G30n98gBEgdGUIr4="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/jsonnet-libs/k8s-libsonnet.git",
           "subdir": "1.28"
         }
