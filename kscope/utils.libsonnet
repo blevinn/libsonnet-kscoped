@@ -1,3 +1,5 @@
+local _coalesce(a, b) = if a != null then a else b;
+
 local _rGet(o, fields, default = null) = 
     if std.isString(fields) then
         _rGet(o, std.split(fields, '.'), default)
@@ -5,10 +7,17 @@ local _rGet(o, fields, default = null) =
         if std.length(fields) == 0 then
             error 'cannot get value with empty fields'
         else if std.length(fields) == 1 then
-            {
-                exists: std.objectHas(o, fields[0]),
-                value: std.get(o, fields[0], default)
-            }
+            if o == null
+            then
+                {
+                    exists: false,
+                    value: default
+                }
+            else
+                {
+                    exists: std.objectHas(o, fields[0]),
+                    value: std.get(o, fields[0], default)
+                }
         else if !std.objectHas(o, fields[0]) then
             {
                 exists: false,
@@ -52,12 +61,18 @@ local walk(o, hooks) =
 
 {
     anyEqual(a, value): std.any(std.map(function(x) x == value, a)),
+    coalesce(a, b): _coalesce(a, b),
     isKubernetesObject(o):
         std.isObject(o)
         && std.objectHas(o, 'apiVersion')
         && std.objectHas(o, 'kind'),
-    rGet(o, fields, default = null): _rGet(o, fields, default).value,
-    rObjectHas(o, fields): _rGet(o, fields).exists,
+    rGet(o, fields, default = null, excludeNull = true):
+        local result = _rGet(o, fields, default);
+        if excludeNull then _coalesce(result.value, default)
+        else result.value,
+    rObjectHas(o, fields, excludeNull = true):
+        local result = _rGet(o, fields);
+        result.exists && (!excludeNull || result.value != null),
     toBoolean(x): if std.isBoolean(x) then x else x == 'true',
     walk(o, hooks): walk(o, hooks),
 }

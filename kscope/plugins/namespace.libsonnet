@@ -53,10 +53,16 @@ local utils = import '../utils.libsonnet';
         
         onFilterObject: function(object, state, parameters)
             local filterNamespace = std.get(parameters, 'namespace');
-            local isNamespace = object.apiVersion == 'v1' && object.kind == 'Namespace';
-            local isNamespaced = isNamespace || utils.toBoolean(utils.rGet(object, ['metadata', 'annotations', 'tanka.dev/namespaced'], true));
+            local isObject = utils.isKubernetesObject(object);
+            local isNamespace = isObject && object.apiVersion == 'v1' && object.kind == 'Namespace';
+            local isNamespaced = 
+                if !isObject then false
+                else if isNamespace then true
+                else utils.toBoolean(utils.rGet(object, ['metadata', 'annotations', 'tanka.dev/namespaced'], true)
+            );
             local hasNamespace = 
-                if isNamespace then object.metadata.name
+                if !isObject then false
+                else if isNamespace then object.metadata.name
                 else utils.rObjectHas(object, ['metadata', 'namespace']);
             local assignedNamespace = utils.rGet(object, ['metadata', 'namespace'], 'default');
             if !isNamespaced then
@@ -65,7 +71,7 @@ local utils = import '../utils.libsonnet';
                 else if hasNamespace && filterNamespace != null && filterNamespace != assignedNamespace
                 then { }
                 else if hasNamespace
-                then std.prune(object + { metadata+: { namespace: null } })
+                then object + std.prune({ metadata: std.get(object, 'metadata', { }) + { namespace: null } })
                 else object
             else if filterNamespace == null || filterNamespace == assignedNamespace
             then object
