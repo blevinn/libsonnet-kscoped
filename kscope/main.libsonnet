@@ -20,8 +20,11 @@ local emptyScope = {};
 local loadPlugin(plugin) = {
   hooks: {
     onApplyDefaults(state, parameters, api, kind, class):
-      local f = utils.rGet(plugin, 'hooks.onApplyDefaults', function(s, p, a, k, c) {});
+      local f = utils.rGet(plugin, 'hooks.onApplyDefaults', function(s, p, a, k, c) { });
       f(state, parameters, api, kind, class),
+    onCreateScopeObjects(state, parameters, scope):
+      local f = utils.rGet(plugin, 'hooks.onCreateScopeObjects', function(s, p, sc) { });
+      f(state, parameters, scope),
     onEnterScope(state, parameters):
       local f = utils.rGet(plugin, 'hooks.onEnterScope', function(s, p) s);
       f(state, parameters),
@@ -115,6 +118,11 @@ local privateAccess(scope) = {
           aggObject
           + plugin.hooks.onApplyDefaults(plugin.state, parameters, api, kind, class);
         std.foldl(executeOne, $.plugins.list(), {}),
+      onCreateScopeObjects(parameters, scope):
+        local executeOne(aggObject, plugin) =
+          aggObject
+          + plugin.hooks.onCreateScopeObjects(plugin.state, parameters, scope);
+        std.foldl(executeOne, $.plugins.list(), {}),
       onEnterScope(parameters):
         local result = scope {
           plugins: [
@@ -152,11 +160,15 @@ local publicAccess(private) = {
   enterScope(params, f):
     local newScope = private.plugins.executeHooks.onEnterScope(params);
     if newScope.plugins.executeHooks.onFilterScope() then
-        utils.walk(f(publicAccess(newScope)),
+        local publicScope = publicAccess(newScope);
+        local pluginObjects = newScope.plugins.executeHooks.onCreateScopeObjects(params, publicScope);
+        local contents = pluginObjects + f(publicAccess(newScope));
+        utils.walk(contents,
             {
                 objectEntry: function(stack, object)
                     if utils.isKubernetesObject(object)
-                    then private.plugins.executeHooks.onFilterObject(object)
+                    then
+                        newScope.plugins.executeHooks.onFilterObject(object)
                     else object,
                 objectRecurse: function(stack, object) !utils.isKubernetesObject(object)
             })

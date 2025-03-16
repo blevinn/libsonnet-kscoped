@@ -13,12 +13,27 @@ local utils = import '../utils.libsonnet';
                 class.metadata.withNamespace(state.namespace)
             else
                 { },
+        
+        onCreateScopeObjects: function(state, parameters, scope)
+            if std.objectHas(parameters, 'createNamespace')
+            then
+                local ns = scope.exportApi('v1', 'Namespace');
+                local field = std.get(parameters, 'createNamespaceField', 'namespace');
+                {
+                    [field]: ns.new(state.namespace) + ns.applyDefaults()
+                }
+            else { },
 
         onEnterScope: function(state, parameters)
-            if std.objectHas(parameters, 'namespace') then
-                state { namespace: parameters.namespace }
+            if std.objectHas(parameters, 'namespace') && std.objectHas(parameters, 'createNamespace') then
+                error "Cannot specify scope parameters 'namespace' and 'createNamespace' at the same time"
+            else if std.objectHas(parameters, 'namespace') then
+                state { namespace: parameters.namespace, createNamespace: false }
+            else if std.objectHas(parameters, 'createNamespace') then
+                local createNamespaceParameter = std.get(parameters, 'createNamespace');
+                state { namespace: createNamespaceParameter, createNamespace: true }
             else
-                state,
+                state { createNamespace: false },
         
         onExportApi: function(state, api, kind, class)
             if std.objectHas(std.get(class, 'metadata', { }), 'withNamespace')
