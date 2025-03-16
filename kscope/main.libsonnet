@@ -1,3 +1,5 @@
+local utils = import './utils.libsonnet';
+
 local util =
   local _firstOrDefault(arr, default=null, filter=function(item) true) =
     if !std.isArray(arr) then
@@ -9,22 +11,8 @@ local util =
     else
       _firstOrDefault(arr[1:], default, filter);
 
-  local _nestedGet(obj, keys, default=null) =
-    if std.isString(keys) then
-      _nestedGet(obj, std.split(keys, '.'), default)
-    else if std.isArray(keys) then
-      if std.length(keys) == 0 then
-        error 'cannot get value with empty keys'
-      else if std.length(keys) == 1 then
-        std.get(obj, keys[0], default)
-      else
-        _nestedGet(std.get(obj, keys[0], {}), keys[1:], default)
-    else
-      default;
-
   {
     firstOrDefault: _firstOrDefault,
-    nestedGet: _nestedGet,
   };
 
 local emptyScope = {};
@@ -32,24 +20,27 @@ local emptyScope = {};
 local loadPlugin(plugin) = {
   hooks: {
     onApplyDefaults(state, parameters, api, kind, class):
-      local f = util.nestedGet(plugin, 'hooks.onApplyDefaults', function(s, p, a, k, c) {});
+      local f = utils.rGet(plugin, 'hooks.onApplyDefaults', function(s, p, a, k, c) {});
       f(state, parameters, api, kind, class),
     onEnterScope(state, parameters):
-      local f = util.nestedGet(plugin, 'hooks.onEnterScope', function(s, p) s);
+      local f = utils.rGet(plugin, 'hooks.onEnterScope', function(s, p) s);
       f(state, parameters),
     onExportApi(state, api, kind, class):
-      local f = util.nestedGet(plugin, 'hooks.onExportApi', function(s, a, k, c) c);
+      local f = utils.rGet(plugin, 'hooks.onExportApi', function(s, a, k, c) c);
       f(state, api, kind, class),
+    onFilterObject(object, state, parameters):
+      local f = utils.rGet(plugin, 'hooks.onFilterObject', function(o, s, p) o);
+      f(object, state, parameters),
     onFilterScope(state, parameters):
-      local f = util.nestedGet(plugin, 'hooks.onFilterScope', function(s, p) true);
+      local f = utils.rGet(plugin, 'hooks.onFilterScope', function(s, p) true);
       f(state, parameters),
   },
   metadata: {
-    id: util.nestedGet(plugin,
+    id: utils.rGet(plugin,
                        'metadata.id',
                        error 'plugin must have an id'),
-    name: util.nestedGet(plugin, 'metadata.name', self.id),
-    description: util.nestedGet(plugin, 'metadata.description', ''),
+    name: utils.rGet(plugin, 'metadata.name', self.id),
+    description: utils.rGet(plugin, 'metadata.description', ''),
   },
   state: {},
 };
@@ -81,7 +72,7 @@ local privateAccess(scope) = {
       privateAccess(result),
     clear(): privateAccess(scope { apis: {} }),
     get(api): std.get($.apis.list(), api),
-    getClass(api, kind): util.nestedGet($.apis.list(), [api, kind]),
+    getClass(api, kind): utils.rGet($.apis.list(), [api, kind]),
     list(): std.get(scope, 'apis', {}),
     remove(api):
       local result = scope {
@@ -92,6 +83,14 @@ local privateAccess(scope) = {
         },
       };
       privateAccess(result),
+  },
+  filter: {
+    set(filter):
+      local result = scope {
+        filter: filter,
+      };
+      privateAccess(result),
+    get(): std.get(scope, 'filter', {}),
   },
   plugins: {
     add(plugin, metadata={}):
@@ -128,9 +127,13 @@ local privateAccess(scope) = {
         local executeOne(aggClass, plugin) =
           plugin.hooks.onExportApi(plugin.state, api, kind, aggClass);
         std.foldl(executeOne, $.plugins.list(), class),
-      onFilterScope(parameters):
+      onFilterObject(object):
+        local executeOne(aggObject, plugin) =
+          plugin.hooks.onFilterObject(aggObject, plugin.state, $.filter.get());
+        std.foldl(executeOne, $.plugins.list(), object),
+      onFilterScope():
         local executeOne(plugin) =
-          plugin.hooks.onFilterScope(plugin.state, parameters);
+          plugin.hooks.onFilterScope(plugin.state, $.filter.get());
         std.all(std.map(executeOne, $.plugins.list())),
     },
     get(id): util.firstOrDefault($.plugins.list(), filter=function(item) item.metadata.id == id),
@@ -148,7 +151,16 @@ local publicAccess(private) = {
 
   enterScope(params, f):
     local newScope = private.plugins.executeHooks.onEnterScope(params);
-    f(publicAccess(newScope)),
+    if newScope.plugins.executeHooks.onFilterScope() then
+        utils.walk(f(publicAccess(newScope)),
+            {
+                objectEntry: function(stack, object)
+                    if utils.isKubernetesObject(object)
+                    then private.plugins.executeHooks.onFilterObject(object)
+                    else object,
+                objectRecurse: function(stack, object) !utils.isKubernetesObject(object)
+            })
+    else { },
 
   exportApi(api, kind):
     local base = private.apis.getClass(api, kind);
@@ -186,13 +198,22 @@ local publicAccess(private) = {
       local addApi(agg, kv) =
         agg + $.configuration.api(kv.key, kv.value);
       std.foldl(addApi, std.objectKeysValuesAll(api), {}),
+    
+    filter(filter): {
+      filter: filter
+    },
+
+    filterMixin(filter): {
+      filter+: filter
+    }
   },
 
   use(config):
     local baseScope = privateAccess(emptyScope);
+    local withFilter = baseScope.filter.set(std.get(config, 'filter', {}));
     local addPlugin(aggScope, plugin) =
       aggScope.plugins.add(plugin);
-    local withPlugins = std.foldl(addPlugin, std.get(config, 'plugins', []), baseScope);
+    local withPlugins = std.foldl(addPlugin, std.get(config, 'plugins', []), withFilter);
     local addAlias(aggScope, kvAlias) =
       aggScope.aliases.add(kvAlias.key, kvAlias.value.api, kvAlias.value.kind);
     local withAliases = std.foldl(addAlias, std.objectKeysValues(std.get(config, 'aliases', {})), withPlugins);
