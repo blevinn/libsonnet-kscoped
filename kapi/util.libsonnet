@@ -57,7 +57,7 @@ local extractVersionFromSubdir(dependency) = rGet(dependency, 'source.git.subdir
 local dependencyVersions(allVersions, dependencies, match, extractVersion) = {
     [extractVersion(d)]: allVersions[extractVersion(d)]
     for d in dependencies
-    if match(d) && semver.validate('d', extractVersion(d)) && std.objectHas(allVersions, extractVersion(d))
+    if match(d) && semver.validate(extractVersion(d)) && std.objectHas(allVersions, extractVersion(d))
 };
 
 local maxVersion(versions) =
