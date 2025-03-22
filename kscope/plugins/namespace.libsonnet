@@ -36,7 +36,9 @@ local utils = import '../utils.libsonnet';
                 state { createNamespace: false },
         
         onExportApi: function(state, api, kind, class)
-            if std.objectHas(std.get(class, 'metadata', { }), 'withNamespace')
+            if !std.isObject(class)
+            then class
+            else if std.objectHas(std.get(class, 'metadata', { }), 'withNamespace')
             then class {
                 metadata+: {
                     withNamespace(namespace):
