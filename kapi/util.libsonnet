@@ -54,12 +54,10 @@ local matchesGitRepsitory(dependency, repository) =
 
 local extractVersionFromSubdir(dependency) = rGet(dependency, 'source.git.subdir');
 
-local traceX(s, x) = std.trace(s + std.toString(x), x);
-
 local dependencyVersions(allVersions, dependencies, match, extractVersion) = {
     [extractVersion(d)]: allVersions[extractVersion(d)]
     for d in dependencies
-    if match(d) && traceX('eV = ', semver.validate(traceX('d', extractVersion(d)))) && std.objectHas(allVersions, extractVersion(d))
+    if match(d) && semver.validate('d', extractVersion(d)) && std.objectHas(allVersions, extractVersion(d))
 };
 
 local maxVersion(versions) =
